@@ -5,4 +5,5 @@ Give yourself permission to run the script: `chmod +x music`
 Then run it from the CLI: `$ ./music`
 
 # Run the tests from the CLI:
+Make sure you have RSpec installed and run this command:
 `ruby music_test.rb`
