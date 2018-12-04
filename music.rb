@@ -49,6 +49,10 @@ class ListeningSession
       self.log "The data must be in this format: add \"title\" \"artist\""
       return
     end
+    if @album_titles_hash[album_title]
+      self.log "There is already an album with that title."
+      return
+    end
     self.log "Added \"#{album_title}\" by #{artist_name}"
     @album_titles_hash[album_title] = Album.new(album_title, artist_name)
   end

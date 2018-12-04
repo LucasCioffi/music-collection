@@ -12,19 +12,31 @@ RSpec.describe ListeningSession do
   describe '#commence' do
     subject { setup_app(input_string) }
 
-    context "when user adds a song" do
+    context "when user adds a new album" do
       let(:input_string) do
         ['add "Ride the Lightning" "Metallica\n"', 'quit'].map{ |command| command + "\n" }.join
       end
 
-      it 'saves the song and says "Bye!"' do
+      it 'saves the album and says "Bye!"' do
         subject.commence
         expect(output.string).to include 'Added "Ride the Lightning" by Metallica'
         expect(output.string).to include 'Bye!'
       end
     end
 
-    context "when user attempts to add a song with a missing argument" do
+    context "when user adds two albums with the same title" do
+      let(:input_string) do
+        ['add "Ride the Lightning" "Metallica\n"','add "Ride the Lightning" "Metallica\n"', 'quit'].map{ |command| command + "\n" }.join
+      end
+
+      it 'shows an error message' do
+        subject.commence
+        expect(output.string.scan(/"Ride the Lightning" by Metallica/).size).to eq 1
+        expect(output.string).to include 'There is already an album with that title.'
+      end
+    end
+
+    context "when user attempts to add a album with a missing argument" do
       let(:input_string) do
         ['add "Ride the Lightning\n"', 'quit'].map{ |command| command + "\n" }.join
       end
@@ -35,7 +47,7 @@ RSpec.describe ListeningSession do
       end
     end
 
-    context "when user shows all songs" do
+    context "when user shows all albums" do
       let(:input_string) do
         [
           'add "Ride the Lightning" "Metallica"',
@@ -45,14 +57,14 @@ RSpec.describe ListeningSession do
         ].map{ |command| command + "\n" }.join
       end
 
-      it 'all songs are visible' do
+      it 'all albums are visible' do
         subject.commence
         expect(output.string).to include '"Ride the Lightning" by Metallica (unplayed)'
         expect(output.string).to include '"Licensed to Ill" by Beastie Boys (unplayed)'
       end
     end
 
-    context "when user plays a song" do
+    context "when user plays a album" do
       let(:input_string) do
         [
           'add "Ride the Lightning" "Metallica"',
@@ -63,7 +75,7 @@ RSpec.describe ListeningSession do
         ].map{ |command| command + "\n" }.join
       end
 
-      it 'the song is marked as played' do
+      it 'the album is marked as played' do
         subject.commence
         expect(output.string).to include 'You\'re listening to "Licensed to Ill'
         # the unplayed album is visible twice, once when it is saved and then after `show unplayed`
@@ -71,7 +83,7 @@ RSpec.describe ListeningSession do
       end
     end
 
-    context "when user searches for all songs by an artist" do
+    context "when user searches for all albums by an artist" do
       let(:input_string) do
         [
           'add "Ride the Lightning" "Metallica"',
@@ -81,7 +93,7 @@ RSpec.describe ListeningSession do
         ].map{ |command| command + "\n" }.join
       end
 
-      it 'all songs by that artist are returned' do
+      it 'all albums by that artist are returned' do
         subject.commence
         expect(output.string.scan(/"Ride the Lightning" by Metallica/).size).to eq 1
         expect(output.string.scan(/Metalica \(unplayed\)/).size).to eq 0
@@ -89,7 +101,7 @@ RSpec.describe ListeningSession do
       end
     end
 
-    context "when user searches for all unplayed songs by an artist" do
+    context "when user searches for all unplayed albums by an artist" do
       let(:input_string) do
         [
           'add "Ride the Lightning" "Metallica"',
@@ -101,12 +113,12 @@ RSpec.describe ListeningSession do
         ].map{ |command| command + "\n" }.join
       end
 
-      it 'returns all songs by that artist' do
+      it 'returns all albums by that artist' do
         subject.commence
-        # these songs are shown only once, when they are saved
+        # these albums are shown only once, when they are saved
         expect(output.string.scan(/"Ride the Lightning" by Metallica/).size).to eq 1
         expect(output.string.scan(/"Licensed to Ill" by Beastie Boys/).size).to eq 1
-        # this song is shown once when saved and once for `show unplayed by "Beastie Boys"`
+        # this album is shown once when saved and once for `show unplayed by "Beastie Boys"`
         expect(output.string.scan(/"Pauls Boutique" by Beastie Boys/).size).to eq 2
       end
     end
