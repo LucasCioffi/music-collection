@@ -1,4 +1,6 @@
-This is a small system for managing a music collection as seen [here](https://gist.github.com/jgoulah/fc742e8512ff730a86d262c25bbf549b).
+This is a small system for managing a music collection.
+
+Instructions for this coding challenge are [here](https://gist.github.com/jgoulah/fc742e8512ff730a86d262c25bbf549b).
 
 # Run the program from the CLI:
 Give yourself permission to run the script: `chmod +x music`
